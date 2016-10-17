@@ -131,7 +131,10 @@ import UIKit
     }
     /// The indicator view's inset. Defaults to 2.0.
     @IBInspectable public var indicatorViewInset: CGFloat = 2.0 {
-        didSet { setNeedsLayout() }
+        didSet {
+            indicatorView.cornerRadius = cornerRadius - indicatorViewInset
+            setNeedsLayout()
+        }
     }
     /// Whether segment widths adjusted based on their content widths. Defaults to false.
     @IBInspectable public var apportionsSegmentWidthsByContent = false {
