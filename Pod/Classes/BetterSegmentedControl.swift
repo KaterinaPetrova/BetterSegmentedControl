@@ -133,6 +133,10 @@ import UIKit
     @IBInspectable public var indicatorViewInset: CGFloat = 2.0 {
         didSet { setNeedsLayout() }
     }
+    /// Whether segment widths adjusted based on their content widths. Defaults to false.
+    @IBInspectable public var apportionsSegmentWidthsByContent = false {
+        didSet { setNeedsLayout() }
+    }
     /// The text color of the non-selected titles / options
     @IBInspectable public var titleColor: UIColor  {
         didSet {
@@ -324,8 +328,20 @@ import UIKit
     
     // MARK: - Helpers
     fileprivate func elementFrame(forIndex index: UInt) -> CGRect {
-        let elementWidth = (width - totalInsetSize) / CGFloat(titleLabelsCount)
-        return CGRect(x: CGFloat(index) * elementWidth + indicatorViewInset,
+        let elementXPosition: CGFloat
+        let elementWidth: CGFloat
+        if (apportionsSegmentWidthsByContent) {
+            let totalTitlesWidth = titleLabels.map({$0.sizeThatFits(CGSize(width: width, height: height)).width})
+            let titleInsetsWidth = (width - totalTitlesWidth.reduce(0.0, +)) / CGFloat(titleLabelsCount)
+            let totalElementWidths = totalTitlesWidth.map{ $0 + titleInsetsWidth}
+            totalTitlesWidth[Int(index)] + titleInsetsWidth
+            elementXPosition = totalElementWidths.prefix(Int(index)).reduce(0.0, +)
+            elementWidth = totalElementWidths[Int(index)]
+        } else {
+            elementWidth = (width - totalInsetSize) / CGFloat(titleLabelsCount)
+            elementXPosition = CGFloat(index) * elementWidth + indicatorViewInset
+        }
+        return CGRect(x: elementXPosition,
                       y: indicatorViewInset,
                       width: elementWidth,
                       height: height - totalInsetSize)
