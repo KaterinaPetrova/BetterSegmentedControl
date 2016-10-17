@@ -178,6 +178,19 @@ import UIKit
         }
     }
     
+    public var customIndicatorView: UIView? {
+        didSet {
+            if let oldView = oldValue {
+                oldView.removeFromSuperview()
+            }
+            if let customIndicatorView = customIndicatorView {
+                customIndicatorView.frame = indicatorView.bounds
+                customIndicatorView.autoresizingMask = [.flexibleHeight, .flexibleWidth]
+                indicatorView.addSubview(customIndicatorView)
+            }
+        }
+    }
+    
     // MARK: - Private properties
     fileprivate let titleLabelsView = UIView()
     fileprivate let selectedTitleLabelsView = UIView()
